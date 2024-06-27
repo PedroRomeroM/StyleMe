@@ -1,0 +1,86 @@
+@import '../../variables';
+
+.ChallengeHeaderContainer {
+    width: 100%;
+    font-family: $font-family;
+    display: flex;
+    margin-left: 3.5%;
+    justify-content: space-between;
+}
+
+.ChallengeHeaderTitle {
+    color: white;
+    width: auto;
+    margin: 0;
+    margin-left: 1rem;
+}
+
+.ChallengeHeaderSideColor {
+    height: 2.5rem;
+    width: 0.2rem;
+    background-color: unset;
+}
+
+.green {
+    background-color: $green;
+}
+
+.yellow {
+    background-color: $yellow;
+}
+
+.red {
+    background-color: $red;
+}
+
+.purple {
+    background-color: $purple;
+}
+
+.ColumnLeftHeader {
+    display: flex;
+    width: auto;
+}
+
+.ColumnRightHeader {
+    margin-right: 5%;
+}
+
+.DifficultySelector {
+    display: flex;
+    width: 100%;
+}
+
+.DifficultyButton {
+    background-color: $cor-primaria;
+    color: white;
+    border: none;
+    padding: 10px 20px;
+    cursor: pointer;
+    font-size: 16px;
+    transition: background-color 0.3s;
+    transition: transform 0.1s;
+}
+
+.DifficultyButton:first-child {
+    border-top-left-radius: 10px;
+    border-bottom-left-radius: 10px;
+}
+
+.DifficultyButton:last-child {
+    border-top-right-radius: 10px;
+    border-bottom-right-radius: 10px;
+}
+
+.DifficultyButton:hover {
+    background-color: darken($cor-primaria, 10%);
+}
+
+.DifficultyButton.active {
+    background: radial-gradient(circle,
+        rgba(206, 93, 217, 1) 0%,
+        rgba(123, 120, 247, 1) 100%);
+    transition: transform 0.1s;
+    transform: scale(1.1);
+    overflow: hidden;
+}

@@ -1,0 +1,204 @@
+version: '3.8'
+
+services:
+  postgres-challenge:
+    image: postgres:latest
+    container_name: postgres-challenge
+    ports:
+      - "5434:5432"
+    environment:
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+      POSTGRES_DB: challenge   
+    volumes:
+      - pgdata-challenge:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  postgres-users:
+    image: postgres:latest
+    container_name: postgres-users
+    ports:
+      - "5433:5432"
+    environment:
+      POSTGRES_DB: users
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD: 1234
+    volumes:
+      - pgdata-users:/var/lib/postgresql/data
+    restart: unless-stopped
+    networks:
+      - app-network
+
+  rabbitmq:
+    image: rabbitmq:3-management
+    container_name: rabbitmq
+    ports:
+      - "5672:5672"
+      - "15672:15672"
+    environment:
+      RABBITMQ_DEFAULT_USER: guest
+      RABBITMQ_DEFAULT_PASS: guest
+    restart: unless-stopped
+    networks:
+      - app-network
+      
+  microorquestrador:
+    build:
+        context: ./backend/microorquestrador
+        dockerfile: Dockerfile
+    image: microorquestrador:latest
+    container_name: microorquestrador
+    ports:
+      - "8080:8080"
+    environment:
+      SPRING_APPLICATION_NAME: microOrquestrador
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-users:5432/users
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SPRING_RABBITMQ_DYNAMIC: "true"
+      SERVER_PORT: 8080
+    depends_on:
+      - postgres-users
+      - rabbitmq
+    restart: unless-stopped
+    networks:
+      - app-network
+  
+  microusers:
+    build:
+        context: ./backend/microusers
+        dockerfile: Dockerfile
+    image: microusers:latest
+    container_name: microusers
+    ports:
+      - "8081:8081"
+    environment:
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-users:5432/users
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      EUREKA_CLIENT_SERVICEURL_DEFAULTZONE: http://eureka-server:8761/eureka/
+    depends_on:
+      - postgres-users
+      - microorquestrador
+    networks:
+      - app-network
+
+  microchallenge:
+    build:
+      context: ./backend/microchallenge
+      dockerfile: Dockerfile
+    image: microchallenge:latest
+    container_name: microchallenge
+    ports:
+      - "8083:8083"
+    environment:
+      SPRING_APPLICATION_NAME: microChallenge
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-challenge:5432/challenge
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SERVER_PORT: 8083
+      LOGGING_LEVEL_ORG_HIBERNATE_SQL: DEBUG
+      LOGGING_LEVEL_ORG_HIBERNATE_TYPE_DESCRIPTOR_SQL: TRACE
+    depends_on:
+      - postgres-challenge
+      - microorquestrador
+    networks:
+      - app-network
+
+  microauth:
+    build:
+      context: ./backend/microauth
+      dockerfile: Dockerfile
+    image: microauth:latest
+    container_name: microauth
+    ports:
+      - "8082:8082"
+    environment:
+      SPRING_APPLICATION_NAME: microAuth
+      SPRING_DATASOURCE_URL: jdbc:postgresql://postgres-challenge:5432/challenge
+      SPRING_DATASOURCE_USERNAME: postgres
+      SPRING_DATASOURCE_PASSWORD: 1234
+      SPRING_DATASOURCE_DRIVER_CLASS_NAME: org.postgresql.Driver
+      SPRING_JPA_HIBERNATE_DDL_AUTO: update
+      SPRING_JPA_SHOW_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_FORMAT_SQL: "true"
+      SPRING_JPA_PROPERTIES_HIBERNATE_DIALECT: org.hibernate.dialect.PostgreSQLDialect
+      SPRING_MAIL_HOST: smtp.gmail.com
+      SPRING_MAIL_PORT: 587
+      SPRING_MAIL_USERNAME: bancodotadsbantads@gmail.com
+      SPRING_MAIL_PASSWORD: dyfgeuptezxbjxhu
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_AUTH: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLS_ENABLE: "true"
+      SPRING_MAIL_PROPERTIES_MAIL_SMTP_STARTTLSS_REQUIRED: "true"
+      SPRING_RABBITMQ_HOST: rabbitmq
+      SPRING_RABBITMQ_PORT: 5672
+      SPRING_RABBITMQ_USERNAME: guest
+      SPRING_RABBITMQ_PASSWORD: guest
+      SERVER_PORT: 8082
+    depends_on:
+      - postgres-challenge
+      - microorquestrador
+    networks:
+      - app-network
+
+  frontend:
+    build:
+      context: ../style-me\style-me  
+      dockerfile: Dockerfile
+    image: frontend:latest
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+
+  gateway:
+    build:
+      context: ./backend/gateway
+      dockerfile: Dockerfile
+    container_name: gateway
+    ports:
+      - "3001:3001"
+    environment:
+      ORQUESTRADOR_API: http://microorquestrador:8080
+      AUTH_API: http://microauth:8082
+      USERS_API: http://microusers:8081
+      CHALLENGE_API: http://microchallenge:8083
+    restart: unless-stopped
+    depends_on:
+      - microorquestrador
+      - microauth
+      - microusers
+      - microchallenge
+    networks:
+      - app-network
+
+
+volumes:
+  pgdata-challenge:
+  pgdata-users:
+  mongodb_data:
+
+networks:
+  app-network:
+    driver: bridge

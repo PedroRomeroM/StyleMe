@@ -1,0 +1,31 @@
+@import '../../variables';
+
+.Challenges {
+    background-color: #2D2C33;
+    height: 100%;
+}
+
+.ChallengesContainer {
+    margin: 5% 0;
+    background-color: none;
+}
+
+.Easy,
+.Medium,
+.Hard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: space-between;
+    margin-bottom: 3%;
+}
+
+.ChallengeList {
+    display: flex;
+    flex-wrap: wrap;
+}
+
+.ChallengeCard {
+    flex: 1 1 calc(25% - 2%);
+    border-radius: 8px;
+    padding: 5% 1%;
+}

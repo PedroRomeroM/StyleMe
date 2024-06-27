@@ -1,0 +1,27 @@
+services:
+
+  mongo-express:
+    image: mongo-express:latest
+    container_name: mongo-express
+    environment:
+      - ME_CONFIG_MONGODB_SERVER=auth-db
+    ports:
+      - '8081:8081'
+    links:
+      - mongodb
+    networks:
+      - mongo-compose-network
+
+  mongodb:
+    container_name: auth-db
+    image: 'mongo:latest'
+    environment:
+      - 'MONGO_INITDB_DATABASE=auth'
+      - 'MONGO_INITDB_ROOT_PASSWORD=1234'
+      - 'MONGO_INITDB_ROOT_USERNAME=root'
+    ports:
+      - '27017:27017'
+      
+networks: 
+    mongo-compose-network:
+      driver: bridge

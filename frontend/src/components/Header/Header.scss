@@ -1,0 +1,137 @@
+@import '../../variables';
+
+.HeaderContainer {
+    margin: 0;
+    padding: 0;
+
+    header {
+        background-color: $cor-primaria;
+        border-radius: 0 0 20px 20px;
+        display: flex;
+        align-items: center;
+        padding: 1rem;
+        justify-content: space-between;
+
+        img {
+            height: 5rem;
+        }
+
+        .profilePic {
+            height: 4rem;
+            border-radius: 50%;
+            margin-right: 2rem;
+        }
+
+        .profilePic:hover {
+            transform: scale(1.05);
+            transition: transform 0.5s ease;
+            cursor: pointer;
+        }
+
+        a:hover {
+            transform: scale(1.05);
+            transition: transform 0.5s ease;
+        }
+
+        .textusername {
+            text-align: end;
+            width: 10rem;
+        }
+    }
+}
+
+.groupRight {
+    display: flex;
+    justify-content: flex-end;
+    font-size: 1.1rem;
+}
+
+.userDetails {
+    margin: auto;
+    padding-right: 5%;
+}
+
+.userDetailsContainer {
+    font-weight: 700;
+    font-family: $font-family;
+    color: white;
+    flex: end;
+
+    a {
+        color: white;
+        text-decoration: none;
+        display: flex;
+        align-items: center;
+        border-radius: 10px;
+        justify-content: flex-end;
+
+        .icon {
+            margin-left: 5%;
+        }
+    }
+}
+
+.rankingInfo {
+    opacity: 50%;
+}
+
+.profileDropdown {
+    position: relative;
+    display: inline-block;
+    font-family: $font-family;
+
+    .dropdownContent {
+        display: none;
+        position: absolute;
+        background-color: $cor-primaria;
+        min-width: 160px;
+        box-shadow: 16px 16px 16px 16px rgba(0, 0, 0, 0.2);
+        z-index: 1;
+        border-radius: 10px;
+        font-size: 1rem;
+
+        a {
+            color: white;
+            padding: 1rem 1rem;
+            text-decoration: none;
+            display: flex;
+            align-items: center;
+            border-radius: 10px;
+
+            .icon {
+                margin-right: 1rem;
+            }
+
+            &:hover {
+                background-color: darken($cor-primaria, 10%);
+            }
+        }
+    }
+
+    &:hover .dropdownContent {
+        display: block;
+        right: 0;
+        top: 100%;
+    }
+}
+
+.addButton {
+    height: 3rem;
+    width: 100%;
+    border-radius: 10px;
+    text-align: center;
+    font-family: $font-family;
+    font-weight: 700;
+    border: none;
+    background: radial-gradient(circle,
+            rgba(206, 93, 217, 1) 30%, rgba(123, 120, 247, 1) 100%);
+    color: white;
+    font-weight: 700;
+    font-size: 17px;
+    cursor: pointer;
+    transition: transform 0.5s;
+}
+
+.addButton:hover {
+    transform: scale(1.05);
+}
