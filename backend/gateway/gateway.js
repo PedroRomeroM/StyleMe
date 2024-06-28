@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { default: axios } = require('axios');
+const { default: axios1 } = require('axios');
 const FormData = require('form-data');
 require('dotenv').config();
 
@@ -14,6 +14,13 @@ const app = express();
 const port = 3001;
 const host = "host.docker.internal"
 
+//Isso serve para poder repasar responses 404 que são tratadas como erro pelo axios
+//Quando o validateStatus está ativado o status(qualquer que seja) só é passado pra frente com o obj da request msm
+const axios = axios1.create({
+  validateStatus: function (status) {
+    return true;
+  }
+});
 
 app.use(cors({ origin: `http://${host}:3000` }));
 
