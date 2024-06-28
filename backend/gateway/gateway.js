@@ -6,7 +6,7 @@ const helmet = require('helmet');
 const cookieParser = require('cookie-parser');
 const cors = require('cors');
 const jwt = require('jsonwebtoken');
-const { default: axios1 } = require('axios');
+const { default: axios } = require('axios');
 const FormData = require('form-data');
 require('dotenv').config();
 
@@ -16,19 +16,19 @@ const host = "host.docker.internal"
 
 //Isso serve para poder repasar responses 404 que são tratadas como erro pelo axios
 //Quando o validateStatus está ativado o status(qualquer que seja) só é passado pra frente com o obj da request msm
-const axios = axios1.create({
-  validateStatus: function (status) {
-    return true;
-  }
-});
+// const axios = axios1.create({
+//   validateStatus: function (status) {
+//     return true;
+//   }
+// });
 
-app.use(cors({ origin: `http://${host}:3000` }));
+app.use(cors());
 
 app.use(express.json());
 
 const tokenExpirationMin = 30; // Quantos minutos para o token expirar
 
-const orquestradorServiceProxy = httpProxy(process.env.ORQUESTRADOR_API + "/api");
+const orquestradorServiceProxy = httpProxy(process.env.ORQUESTRADOR_API );
 const jwtServiceProxy = httpProxy(process.env.AUTH_API + '/auth/login', {
   function(res) { console.log(res); return res },
   proxyReqOptDecorator: function (proxyReqOpts) {
@@ -64,8 +64,9 @@ const jwtServiceProxy = httpProxy(process.env.AUTH_API + '/auth/login', {
   },
 });
 
-function verifyJWT(req, res, next) {
-  const token = req.headers['x-access-token'];
+async function verifyJWT(req, res, next) {
+  const token = await req.headers['x-access-token'];
+  console.log(req.headers['x-access-token'])
   if (!token) {
     return res.status(401).json({ auth: false, message: 'Token não fornecido.' });
   }
@@ -91,7 +92,7 @@ app.post('/api/auth/login', async (req, res, next) => { jwtServiceProxy(req, res
 app.get(`/api/user`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
 
-  const response = await axios.get(`${process.env.USERS_API}/api/user/${jwtInfo.id}`);
+  const response = await axios.get(`${process.env.USERS_API}/user/${jwtInfo.id}`);
 
   let email = jwtInfo.email;
 
@@ -106,6 +107,16 @@ app.get(`/api/ch`, verifyJWT, async (req, res) => {
 
   try {
     const response = await axios.get(`http://${host}:8083/api/ch/${jwtInfo.id}`);
+    res.send(response.data);
+
+  } catch (e) {
+    console.log(e)
+  }
+});
+
+app.get(`/api/healtz`, async (req, res) => {
+  try {
+    const response = await axios.get(`http://${host}:8081/api/user/0`);
     res.send(response.data);
 
   } catch (e) {

@@ -1,3 +1,3 @@
-cd style-me-back-end\backend
+cd .\backend
 
 build.bat

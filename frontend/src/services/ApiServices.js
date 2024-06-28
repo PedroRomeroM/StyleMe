@@ -1,6 +1,6 @@
 import axios from "axios";
 
-const BASE_URL = "http://localhost:3001";
+const BASE_URL = "http://host.docker.internal:3001";
 
 export async function createUser(formData) {
 
@@ -74,6 +74,7 @@ export async function login1(formData) {
 }
 
 export async function getUserInfo(tk) {
+  console.log(tk)
   const response = await axios.get(`${BASE_URL}/api/user`, {
     headers: {
       "x-access-token": tk,
