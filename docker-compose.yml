@@ -185,8 +185,8 @@ services:
       #USERS_API: http://microusers:8081
       #CHALLENGE_API: http://microchallenge:8083
     restart: unless-stopped
-    depends_on:
-      - microauth
+    #depends_on:
+    #  - microauth
     #  - microorquestrador
     #  - microusers
     #  - microchallenge
