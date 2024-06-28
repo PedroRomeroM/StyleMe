@@ -12,7 +12,10 @@ require('dotenv').config();
 
 const app = express();
 const port = 3001;
-app.use(cors({ origin: 'http://localhost:3000' }));
+const host = "host.docker.internal"
+
+
+app.use(cors({ origin: `http://${host}:3000` }));
 
 app.use(express.json());
 
@@ -95,7 +98,7 @@ app.get(`/api/ch`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
 
   try {
-    const response = await axios.get(`http://localhost:8083/api/ch/${jwtInfo.id}`);
+    const response = await axios.get(`http://${host}:8083/api/ch/${jwtInfo.id}`);
     res.send(response.data);
 
   } catch (e) {
@@ -107,7 +110,7 @@ app.get(`/api/ch`, verifyJWT, async (req, res) => {
 app.get(`/api/user/ranking`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
 
-  const response = await axios.get(`http://localhost:8081/api/user/ranking/${jwtInfo.id}`);
+  const response = await axios.get(`http://${host}:8081/api/user/ranking/${jwtInfo.id}`);
 
   res.send(response.data);
 });
@@ -116,7 +119,7 @@ app.get(`/api/user/ranking`, verifyJWT, async (req, res) => {
 app.get(`/api/ch/perfil`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
 
-  const response = await axios.get(`http://localhost:8083/api/ch/perfil/${jwtInfo.id}`);
+  const response = await axios.get(`http://${host}:8083/api/ch/perfil/${jwtInfo.id}`);
 
   res.send(response.data);
 });
@@ -126,7 +129,7 @@ app.get(`/api/ch/des`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
   let idChallenge = req.headers['id-challenge'];
 
-  const response = await axios.get(`http://localhost:8083/api/ch/${jwtInfo.id}/${idChallenge}`);
+  const response = await axios.get(`http://${host}:8083/api/ch/${jwtInfo.id}/${idChallenge}`);
 
   res.send(response.data);
 });
@@ -142,7 +145,7 @@ app.post(`/api/ch/done`, verifyJWT, async (req, res) => {
   };
 
   try {
-    const response = await axios.post(`http://localhost:8080/api/orq/chdone`, objSend);
+    const response = await axios.post(`http://${host}:8080/api/orq/chdone`, objSend);
     res.json(response.data); // Envia apenas os dados da resposta
   } catch (error) {
     console.error('Erro ao concluir desafio:', error);
@@ -165,7 +168,7 @@ app.put('/api/user/up', verifyJWT, async (req, res) => {
   };
 
   try {
-    const response = await axios.put('http://localhost:8081/api/user', payload, {
+    const response = await axios.put(`http://${host}:8081/api/user`, payload, {
     });
     res.send(response.data);
   } catch (error) {
@@ -178,7 +181,7 @@ app.put('/api/user/up', verifyJWT, async (req, res) => {
 app.get(`/api/rec/senha`, async (req, res) => {
   let email = req.headers['email'];
 
-  const response = await axios.get(`http://localhost:8082/api/auth/recover/${email}`);
+  const response = await axios.get(`http://${host}:8082/api/auth/recover/${email}`);
 
   res.send(response.data);
 });
@@ -196,7 +199,7 @@ app.put('/api/password/up', verifyJWT, async (req, res) => {
   };
 
   try {
-    const response = await axios.put('http://localhost:8082/api/auth', payload, {
+    const response = await axios.put(`http://${host}:8082/api/auth`, payload, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -219,7 +222,7 @@ app.delete(`/api/del/ch`, verifyJWT, async (req, res) => {
   let chId = req.headers['challenge-id'];
 
   try {
-    const response = await axios.delete(`http://localhost:8080/api/orq/chdelete/${chId}`);
+    const response = await axios.delete(`http://${host}:8080/api/orq/chdelete/${chId}`);
     res.send(response.data);
   } catch (error) {
     console.error('Erro ao excluir o desafio:', error);
@@ -248,7 +251,7 @@ app.post(`/api/cr/ch`, verifyJWT, async (req, res) => {
   };
 
   try {
-    const response = await axios.post(`http://localhost:8083/api/ch`, objSend);
+    const response = await axios.post(`http://${host}:8083/api/ch`, objSend);
     res.json(response.data);
   } catch (error) {
     console.error('Erro ao criar o desafio:', error);
@@ -259,7 +262,7 @@ app.post(`/api/cr/ch`, verifyJWT, async (req, res) => {
 app.get(`/api/user/exists`, async (req, res) => {
   let username = req.headers['username'];
 
-  const response = await axios.get(`http://localhost:8081/api/user/usernameExists/${username}`);
+  const response = await axios.get(`http://${host}:8081/api/user/usernameExists/${username}`);
 
   res.send(response.data);
 });
@@ -267,7 +270,7 @@ app.get(`/api/user/exists`, async (req, res) => {
 app.get(`/api/email/exists`, async (req, res) => {
   let email = req.headers['email'];
 
-  const response = await axios.get(`http://localhost:8082/api/auth/emailexists/${email}`);
+  const response = await axios.get(`http://host.docker.internal:8082/api/auth/emailexists/${email}`);
 
   res.send(response.data);
 });
@@ -285,7 +288,7 @@ app.put('/api/ch/up', async (req, res) => {
   };
 
   try {
-    const response = await axios.put('http://localhost:8083/api/ch', payload, {
+    const response = await axios.put(`http://${host}:8083/api/ch`, payload, {
       headers: {
         'Content-Type': 'application/json'
       },
@@ -296,6 +299,11 @@ app.put('/api/ch/up', async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar o desafio' });
   }
 });
+
+app.get('/hello', function (req, res) {
+  res.send('Hello World!');
+});
+
 
 // Configuração da aplicação
 app.use(logger('dev'));

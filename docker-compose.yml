@@ -179,17 +179,17 @@ services:
     container_name: gateway
     ports:
       - "3001:3001"
-    environment:
-      ORQUESTRADOR_API: http://microorquestrador:8080
-      AUTH_API: http://microauth:8082
-      USERS_API: http://microusers:8081
-      CHALLENGE_API: http://microchallenge:8083
+    #environment:
+      #ORQUESTRADOR_API: http://microorquestrador:8080
+      #AUTH_API: http://microauth
+      #USERS_API: http://microusers:8081
+      #CHALLENGE_API: http://microchallenge:8083
     restart: unless-stopped
     depends_on:
-      - microorquestrador
       - microauth
-      - microusers
-      - microchallenge
+    #  - microorquestrador
+    #  - microusers
+    #  - microchallenge
     networks:
       - app-network
 

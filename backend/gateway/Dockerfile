@@ -1,8 +1,8 @@
-# Use a imagem node como base
-FROM node:14
+# Usa a imagem oficial do Node como base
+FROM node:alpine
 
 # Diretório de trabalho dentro do container
-WORKDIR /usr/src/app
+WORKDIR /app
 
 # Copia o package.json e o package-lock.json (se existir)
 COPY package*.json ./
