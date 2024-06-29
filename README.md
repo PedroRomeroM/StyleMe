@@ -15,14 +15,12 @@ Neste repositório contém o código fonte para a entrega do projeto para a disc
   
 *Clone o repositório em uma pasta de seja de fácil acesso.*
 
-Rodar Backend:
-1. Primeiro rode o script: GerarImagens
-2. Espere o script rodar e terminar.
-3. Rode o script main.bat e espere terminar.
+1. Rode o arquivo .bat -> build.bat
+2. Depois de finalizar rode o arquivo .bat -> main.bat.
+3. Acesse o localhost:3000
 
-Rodar Frontend:
-1. Entre na pasta style-me
-2. Entre novamente na pasta style-me
-3. Abra o terminal
-4. Execute o comando: **node gateway.js**
-5. Abra outro terminal (no mesmo diretório que o anterior) e execute o comando: **npm start**
+
+# Para logar como admin:
+username: admin
+
+senha: admin
