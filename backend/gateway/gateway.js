@@ -92,7 +92,7 @@ app.post('/api/auth/login', async (req, res, next) => { jwtServiceProxy(req, res
 app.get(`/api/user`, verifyJWT, async (req, res) => {
   let jwtInfo = req.infoUser;
 
-  const response = await axios.get(`${process.env.USERS_API}/user/${jwtInfo.id}`);
+  const response = await axios.get(`http://${host}:8081/api/user/${jwtInfo.id}`);
 
   let email = jwtInfo.email;
 

@@ -225,7 +225,30 @@ const CriarDesafio = () => {
 
   function checkLevel() {
     const level = state.color;
-
+    if(!level) {
+      return (
+        <select
+          type="text"
+          className="Input admin select"
+          id="Dificuldade"
+          value={dificuldade}
+          onChange={handleDificuldadeChange}
+        >
+          <option value="0" className="values">
+            Selecione a dificuldade
+          </option>
+          <option value="1" className="values">
+            Fácil
+          </option>
+          <option value="2" className="values">
+            Médio
+          </option>
+          <option value="3" className="values">
+            Difícil
+          </option>
+        </select>
+      )
+    }
     if (level === 'green') {
       return (
         <select
