@@ -174,13 +174,15 @@ export async function ChDone(tk, idCh) {
 
 export async function updateUser(tk, usern, bas64, imgtype) {
   try {
+    const payload = {
+      username: usern,
+      img: bas64,
+      imgType: imgtype
+    };
 
-    const response = await axios.put(`${BASE_URL}/api/user/up`, {}, {
+    const response = await axios.put(`${BASE_URL}/api/user/up`, payload, {
       headers: {
         'x-access-token': tk,
-        'img': bas64,
-        'username': usern,
-        'img-type': imgtype,
         'Content-Type': 'application/json'
       },
     });
@@ -191,6 +193,7 @@ export async function updateUser(tk, usern, bas64, imgtype) {
     return '';
   }
 }
+
 
 
 export async function getTypeUser(tk) {

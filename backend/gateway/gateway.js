@@ -14,17 +14,9 @@ const app = express();
 const port = 3001;
 const host = "host.docker.internal"
 
-//Isso serve para poder repasar responses 404 que são tratadas como erro pelo axios
-//Quando o validateStatus está ativado o status(qualquer que seja) só é passado pra frente com o obj da request msm
-// const axios = axios1.create({
-//   validateStatus: function (status) {
-//     return true;
-//   }
-// });
-
 app.use(cors());
 
-app.use(express.json());
+app.use(express.json({ limit: '10mb' })); 
 
 const tokenExpirationMin = 30; // Quantos minutos para o token expirar
 
@@ -83,8 +75,26 @@ async function verifyJWT(req, res, next) {
   });
 }
 
-// ORQUESTRADOR
-app.post('/api/orq/cadastro', (req, res, next) => orquestradorServiceProxy(req, res, next));
+// ORQUESTRADOR - Cadastro de Usuário
+app.post('/api/orq/cadastro', express.json(), async (req, res) => {
+  // Dados recebidos do front-end através do corpo da requisição
+  const userData = req.body;
+
+  try {
+    // Chamada ao serviço de orquestrador com os dados do usuário
+    const response = await axios.post(`${process.env.ORQUESTRADOR_API}/orq/cadastro`, userData, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
+    });
+
+    // Enviar de volta a resposta do serviço de orquestrador ao cliente
+    res.status(response.status).json(response.data);
+  } catch (error) {
+    console.error('Erro ao cadastrar usuário:', error);
+    res.status(500).json({ message: 'Erro ao cadastrar usuário' });
+  }
+});
 
 // AUTH
 app.post('/api/auth/login', async (req, res, next) => { jwtServiceProxy(req, res, next); });
@@ -173,20 +183,21 @@ app.post(`/api/ch/done`, verifyJWT, async (req, res) => {
 
 // Atualização do usuário
 app.put('/api/user/up', verifyJWT, async (req, res) => {
-  let idUser = req.infoUser.id;
-  let username = req.headers['username'];
-  let img = req.headers['img'];
-  let imgtype = req.headers['img-type'];
+  const { username, img, imgType } = req.body;
+  let idUser = req.infoUser.id;  // Ainda pegando o id do usuário do token JWT
 
   let payload = {
     idUser: idUser,
     username: username,
-    imgtype: imgtype,
-    img: img // img é uma string base64
+    imgtype: imgType,
+    img: img  // img é uma string base64
   };
 
   try {
     const response = await axios.put(`http://${host}:8081/api/user`, payload, {
+      headers: {
+        'Content-Type': 'application/json'
+      }
     });
     res.send(response.data);
   } catch (error) {
@@ -194,6 +205,7 @@ app.put('/api/user/up', verifyJWT, async (req, res) => {
     res.status(500).json({ message: 'Erro ao atualizar o perfil' });
   }
 });
+
 
 // RECUPERAÇÃO DE SENHA
 app.get(`/api/rec/senha`, async (req, res) => {
